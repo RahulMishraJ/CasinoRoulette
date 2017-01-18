@@ -14,8 +14,8 @@ public abstract class BallMovement : MonoBehaviour
 	public float ballRollingSpeed;
 	public float slotInsideMovementSpeed;
 
-	protected float initialMovementTime = 10f;
-	protected float timer;
+	public float initialMovementTime;
+	public float timer;
 	protected float tempTimer;
 	protected float angle;
 

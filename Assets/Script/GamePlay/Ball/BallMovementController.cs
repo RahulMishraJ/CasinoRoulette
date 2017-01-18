@@ -52,7 +52,9 @@ public class BallMovementController : MonoBehaviour
 	{
 		curBallMovementState = (BallMovementState)Random.Range(1, 6);
 		//AssignMovementState ();
-		directlyInsideSlotState.enabled = true;
+
+		doubleHoleDoubleJumpState.Reset();
+		doubleHoleDoubleJumpState.enabled = true;
 	}
 
 	public void ChangeMovementState()
