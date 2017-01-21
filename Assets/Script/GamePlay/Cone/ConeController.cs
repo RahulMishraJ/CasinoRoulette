@@ -27,14 +27,31 @@ public class ConeController : MonoBehaviour
 		OnRotateSecondCone (numberAngles[inputNumber]);
 	}
 
-	private void OnRotateSecondCone(int number)
-	{
-		numeberSecondCone = number - 15;
-		if (numeberSecondCone < 1) {
-		
-			numeberSecondCone = 36 + numeberSecondCone;
+
+		// going inside with jump
+		private void OnRotateSecondCone(int number)
+		{
+			numeberSecondCone = number - 8;
+			if (numeberSecondCone < 1) {
+			
+				numeberSecondCone = 36 + numeberSecondCone;
+			}
+			obstacle.transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
 		}
-		obstacle.transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
-	}
+
+
+
+
+
+	// dirctly InsideSlot
+//	private void OnRotateSecondCone(int number)
+//	{
+//		numeberSecondCone = number - 15;
+//		if (numeberSecondCone < 1) {
+//		
+//			numeberSecondCone = 36 + numeberSecondCone;
+//		}
+//		obstacle.transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
+//	}
 
 }
