@@ -17,6 +17,8 @@ public class GameController : MonoBehaviour
 	}
 
 	public ConeController coneController;
+	public RouletteRotation rouletteRotation;
+
 
 	public static GameController INIT()
 	{

@@ -7,6 +7,7 @@ public abstract class BallMovement : MonoBehaviour
 
 	public GameObject roulette;
 	public GameObject finalObject;
+	public Transform finalReachedPoint;
 
 	public float outerRadius = 1.35f;
 	public float innerRadius = 1.1f;
@@ -18,7 +19,7 @@ public abstract class BallMovement : MonoBehaviour
 	public float timer;
 	protected float tempTimer;
 	protected float angle;
-
+	public float hitPoint;
 	protected Vector3 tempdir;
 
 	public virtual void OnStageChanege()

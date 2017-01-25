@@ -28,6 +28,7 @@ public class UIController : MonoBehaviour {
 	public void OnStart()
 	{
 		BallMovementController.Instance.StartBallMovemnt ();
+		GameController.Instance.rouletteRotation.rotationSpeed = 100f;
 	}
 
 	public void OnStop()
