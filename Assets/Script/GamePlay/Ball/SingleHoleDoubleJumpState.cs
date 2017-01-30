@@ -299,6 +299,7 @@ public class SingleHoleDoubleJumpState : BallMovement
 		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.55f);
 		if (Vector3.Magnitude (transform.position - movePosition) < 0.3f) {
+			rigidbody.isKinematic = true; 
 			curMovementState = MovementState.FinalPosition;
 		}
 	}
@@ -313,7 +314,7 @@ public class SingleHoleDoubleJumpState : BallMovement
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.45f);
 		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f)
 		{
-			rigidbody.isKinematic = true; 
+			//rigidbody.isKinematic = true; 
 			curMovementState = MovementState.None;
 			OnComplete ();
 		}

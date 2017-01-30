@@ -13,7 +13,6 @@ public class BallMovementController : MonoBehaviour
 	{
 		None = 0,
 		DirectlyInsideSlot,
-		DoubleHoleDoubleJump,
 		DoubleHoleSingleJump,
 		SingleHoleDoubleJump,
 		SingleHoleSingleJump,
@@ -27,7 +26,7 @@ public class BallMovementController : MonoBehaviour
 
 	public BallMovementState curBallMovementState;
 
-
+	public int stopNumber;
 
 	void Awake()
 	{
@@ -50,17 +49,9 @@ public class BallMovementController : MonoBehaviour
 	public void StartBallMovemnt()
 	{
 		curBallMovementState = (BallMovementState)Random.Range(1, 5);
-		//AssignMovementState ();
-		//directlyInsideSlotState.Int();
-		//directlyInsideSlotState.enabled = true;
-
-		//doubleHoleDoubleJumpState.Int();
-		//doubleHoleDoubleJumpState.enabled = true;
-
-		//singleHoleSingleJumpState.enabled = true;
-
-		singleHoleDoubleJumpState.enabled = true;
-
+		//curBallMovementState = BallMovementState.DoubleHoleSingleJump;
+		ChangeMovementState ();
+		GameController.Instance.coneController.RotateCone (stopNumber);
 	}
 
 	public void ChangeMovementState()

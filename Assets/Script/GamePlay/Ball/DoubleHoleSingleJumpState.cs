@@ -180,6 +180,9 @@ public class DoubleHoleSingleJumpState : BallMovement
 			outerRadius = outerRadius - tempTimer;
 		}
 
+		if (outerRadius < 1.35f)
+			outerRadius = 1.35f;
+		
 		base.BallMovementCircle ();
 	}
 

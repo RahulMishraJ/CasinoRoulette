@@ -16,12 +16,14 @@ public class UIController : MonoBehaviour {
 
 	public void OnEndChange(string str)
 	{
-		GameController.Instance.coneController.RotateCone (int.Parse(str));
+		//GameController.Instance.coneController.RotateCone (int.Parse(str));
+		BallMovementController.Instance.stopNumber = int.Parse(str);
+
 	}
 
 	public void OnClickRotate()
 	{
-		GameController.Instance.coneController.RotateCone (int.Parse(input.text));
+		//GameController.Instance.coneController.RotateCone (int.Parse(input.text));
 
 	}
 
