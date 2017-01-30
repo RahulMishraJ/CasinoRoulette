@@ -61,21 +61,25 @@ public class BallMovementController : MonoBehaviour
 			case BallMovementState.DirectlyInsideSlot:
 			{
 				directlyInsideSlotState.enabled = true;
+				directlyInsideSlotState.Int ();
 			}
 			break;
 			case BallMovementState.DoubleHoleSingleJump:
 			{
 				doubleHoleSingleJumpState.enabled = true;
+				doubleHoleSingleJumpState.Int ();
 			}
 			break;
 			case BallMovementState.SingleHoleDoubleJump:
 			{
 				singleHoleDoubleJumpState.enabled = true;
+				singleHoleDoubleJumpState.Int ();
 			}
 			break;
 			case BallMovementState.SingleHoleSingleJump:
 			{
 				singleHoleSingleJumpState.enabled = true;
+				singleHoleSingleJumpState.Int ();
 			}
 			break;
 			case BallMovementState.Stop :

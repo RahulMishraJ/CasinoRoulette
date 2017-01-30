@@ -285,7 +285,7 @@ public class SingleHoleSingleJumpState : BallMovement
 
 	private void OnComplete()
 	{
-		Debug.LogError ("On Complete....");
+		OnStageChanege ();
 	}
 
 	#endregion
@@ -365,11 +365,6 @@ public class SingleHoleSingleJumpState : BallMovement
 	public override void OnStageChanege ()
 	{
 		base.OnStageChanege ();
-	}
-
-	void OnDisable()
-	{
-
 	}
 
 }

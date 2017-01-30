@@ -47,6 +47,9 @@ public class DirectlyInsideSlotState : BallMovement
 
 	public void Int()
 	{
+		
+		ballRollingSpeed = 500f;
+		innerRadius = 1.35f;
 		hitPoint = 2f;
 		rigidbody = this.GetComponent<Rigidbody> ();
 		minimumSpeed = 0.4f;
@@ -275,16 +278,8 @@ public class DirectlyInsideSlotState : BallMovement
 
 		if (Physics.Raycast (downRay, out hit,1000f)) 
 		{
-			hitPoint = hit.point.y  +0.06f;
+			hitPoint = hit.point.y  + 0.06f;
 		}
 	}
-
-	void OnDisable()
-	{
-		//Reset ();
-		//Invoke("Reset");
-	}
-
-
 
 }

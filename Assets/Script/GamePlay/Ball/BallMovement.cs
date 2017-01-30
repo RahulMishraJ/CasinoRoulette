@@ -12,22 +12,23 @@ public abstract class BallMovement : MonoBehaviour
 
 	public Transform[] movePoint; 
 
-	public float outerRadius = 1.35f;
-	public float innerRadius = 1.1f;
-	public float rotationSpeed;
-	public float ballRollingSpeed;
-	public float slotInsideMovementSpeed;
-
-	public float initialMovementTime;
-	public float timer;
+	protected float outerRadius ;
+	protected float innerRadius ;
+	protected float rotationSpeed;
+	protected float ballRollingSpeed;
+	protected float slotInsideMovementSpeed;
+	protected float initialMovementTime;
+	protected float timer;
 	protected float tempTimer;
 	protected float angle;
-	public float hitPoint;
+	protected float hitPoint;
+
 	protected Vector3 tempdir;
 	protected Vector3 movePositionUp;
 	protected Vector3 movePositionDown;
 	protected Vector3 movePosition;
-	public BallHolder ballholder;
+
+	protected BallHolder ballholder;
 
 	protected KnobController knobController;
 
@@ -45,5 +46,16 @@ public abstract class BallMovement : MonoBehaviour
 		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
 	}
 
+	// find the yHitpoint
+	public void FindYAxis()
+	{
+		RaycastHit hit;
+		Ray downRay = new Ray(transform.position, - Vector3.up);
+
+		if (Physics.Raycast (downRay, out hit,1000f)) 
+		{
+			hitPoint = hit.point.y  +0.06f;
+		}
+	}
 
 }
