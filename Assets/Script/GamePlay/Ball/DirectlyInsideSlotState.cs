@@ -106,9 +106,7 @@ public class DirectlyInsideSlotState : BallMovement
 			}
 		}
 
-		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
-		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
+		base.BallMovementCircle ();
 
 	}
 
@@ -199,7 +197,7 @@ public class DirectlyInsideSlotState : BallMovement
 	{
 		if (this.enabled) 
 		{
-			if (col.gameObject.tag.Equals ("Cone")) 
+			if (col.gameObject.tag.Equals (GameConstant.CONE_COL)) 
 			{
 				if (curHitState == HitState.Obstacle) {
 					rotationSpeed = 0;
@@ -207,11 +205,11 @@ public class DirectlyInsideSlotState : BallMovement
 					rigidbody.isKinematic = false; 
 				}
 			} 
-			else if (col.gameObject.tag.Equals ("InsideObstacle")) 
+			else if (col.gameObject.tag.Equals (GameConstant.INSIDE_OBSTACLE)) 
 			{
 				curMovementState = MovementState.InSlot;
 			} 
-			else if (col.gameObject.tag.Equals ("Obstacle")) 
+			else if (col.gameObject.tag.Equals (GameConstant.OBSTACLE_COL)) 
 			{
 				count++;
 				if (count == 1) {
@@ -254,9 +252,8 @@ public class DirectlyInsideSlotState : BallMovement
 				//reduceSpeedFactor = rotationSpeed*2f;
 				curHitState = HitState.Obstacle;
 			}
-			else if (col.gameObject.tag.Equals ("Knob")) 
+			else if (col.gameObject.tag.Equals (GameConstant.KNOB_COL)) 
 			{
-				Debug.Log ("Hitting Knob ....");
 				curMovementState = MovementState.None;
 				outerRadius = 1.5f;
 				rotationSpeed = 2.0f;

@@ -38,8 +38,6 @@ public class SingleHoleSingleJumpState : BallMovement
 	public HitState curHitState;
 	public RadiusState curRadiusState; 
 
-	public Transform[] movePoint; 
-
 	private Rigidbody rigidbody;
 
 	private Vector3 startPosition;
@@ -181,9 +179,7 @@ public class SingleHoleSingleJumpState : BallMovement
 		if (outerRadius < 1.35f)
 			outerRadius = 1.35f;
 
-		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
-		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
+		base.BallMovementCircle ();
 
 	}
 
@@ -211,6 +207,7 @@ public class SingleHoleSingleJumpState : BallMovement
 		curMovementState = MovementState.Normal;
 		curRadiusState = RadiusState.DecRadius;
 	}
+
 
 
 	// move ball in curve to enter in slot
@@ -308,10 +305,9 @@ public class SingleHoleSingleJumpState : BallMovement
 	{
 		if(this.enabled)
 		{
-
 			if (!firsttimehit) 
 			{
-				if (col.gameObject.tag.Equals ("Knob")) 
+				if (col.gameObject.tag.Equals (GameConstant.KNOB_COL)) 
 				{
 					movePositionUp = col.gameObject.GetComponent<KnobController> ().upPosition [1].position;
 					movePositionDown = col.gameObject.GetComponent<KnobController> ().downPosition [1].position;
@@ -321,7 +317,7 @@ public class SingleHoleSingleJumpState : BallMovement
 					OnMoveUp ();
 
 				} 
-				else if (col.gameObject.tag.Equals ("Collider")) 
+				else if (col.gameObject.tag.Equals (GameConstant.POCKET_COL)) 
 				{
 					if (!firsttimehit) {
 						curRadiusState = RadiusState.None;
@@ -332,15 +328,14 @@ public class SingleHoleSingleJumpState : BallMovement
 
 					}
 				}
-				else if (col.gameObject.tag.Equals ("Obstacle")) 
+				else if (col.gameObject.tag.Equals (GameConstant.OBSTACLE_COL)) 
 				{
-					Debug.Log ("Obstacle......");
 					if (curHitState == HitState.Obstacle) 
 					{
 						curRadiusState = RadiusState.None;
 						curMovementState = MovementState.CurveMovement;
 					}
-					if (col.gameObject.name.Equals ("Obstacle3")) 
+					if (col.gameObject.name.Equals (GameConstant.OBSTACLE_NAME)) 
 					{
 						curHitState = HitState.Obstacle;
 						if(rotationSpeed >= 2f )
@@ -357,7 +352,7 @@ public class SingleHoleSingleJumpState : BallMovement
 						}
 					}
 				} 
-				else if (col.gameObject.tag.Equals ("Cone")) 
+				else if (col.gameObject.tag.Equals (GameConstant.CONE_COL)) 
 				{
 					rigidbody.isKinematic = false;
 					curMovementState = MovementState.InsideSlotMove;

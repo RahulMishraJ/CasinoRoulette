@@ -21,7 +21,6 @@ public class BallMovementController : MonoBehaviour
 	}
 
 	public DirectlyInsideSlotState directlyInsideSlotState;
-	public DoubleHoleDoubleJumpState doubleHoleDoubleJumpState;
 	public DoubleHoleSingleJumpState doubleHoleSingleJumpState;
 	public SingleHoleDoubleJumpState singleHoleDoubleJumpState;
 	public SingleHoleSingleJumpState singleHoleSingleJumpState;
@@ -50,7 +49,7 @@ public class BallMovementController : MonoBehaviour
 
 	public void StartBallMovemnt()
 	{
-		curBallMovementState = (BallMovementState)Random.Range(1, 6);
+		curBallMovementState = (BallMovementState)Random.Range(1, 5);
 		//AssignMovementState ();
 		//directlyInsideSlotState.Int();
 		//directlyInsideSlotState.enabled = true;
@@ -73,11 +72,6 @@ public class BallMovementController : MonoBehaviour
 				directlyInsideSlotState.enabled = true;
 			}
 			break;
-			case BallMovementState.DoubleHoleDoubleJump:
-			{
-				doubleHoleDoubleJumpState.enabled = true;
-			}
-			break;
 			case BallMovementState.DoubleHoleSingleJump:
 			{
 				doubleHoleSingleJumpState.enabled = true;
@@ -96,7 +90,6 @@ public class BallMovementController : MonoBehaviour
 			case BallMovementState.Stop :
 			{
 				directlyInsideSlotState.enabled = false;
-				doubleHoleDoubleJumpState.enabled = false;
 				doubleHoleSingleJumpState.enabled = false;
 				singleHoleDoubleJumpState.enabled = false;
 				singleHoleSingleJumpState.enabled = false;

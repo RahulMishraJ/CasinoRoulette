@@ -7,7 +7,10 @@ public abstract class BallMovement : MonoBehaviour
 
 	public GameObject roulette;
 	public GameObject finalObject;
+
 	public Transform finalReachedPoint;
+
+	public Transform[] movePoint; 
 
 	public float outerRadius = 1.35f;
 	public float innerRadius = 1.1f;
@@ -34,5 +37,13 @@ public abstract class BallMovement : MonoBehaviour
 		BallMovementController.Instance.curBallMovementState = BallMovementController.BallMovementState.Stop;
 		BallMovementController.Instance.ChangeMovementState ();
 	}
+
+	public virtual void BallMovementCircle()
+	{
+		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
+		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
+		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
+	}
+
 
 }
