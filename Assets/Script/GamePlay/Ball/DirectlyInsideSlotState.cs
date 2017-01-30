@@ -135,12 +135,25 @@ public class DirectlyInsideSlotState : BallMovement
 		curMovementState = MovementState.Normal;
 	}
 
+	// Ball move in slot
+	void MoveBallInSlot()
+	{
+		movePosition = slotInPosition.position;
+		movePosition.y = hitPoint - 0.02f;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
+		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
+		transform.position = Vector3.Slerp(transform.position, movePosition, Time.deltaTime*1.2f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.15f) {
+			curMovementState = MovementState.InsideSlot;
+
+		}
+	}
 
 	// Ball movement inside slot
 	void MoveBallInsideSlot()
 	{
 		movePosition = finalObject.transform.position;
-		movePosition.y = hitPoint;
+		movePosition.y = hitPoint - 0.02f;
 		tempdir = Vector3.Normalize (transform.position - movePosition);
 		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.8f);
@@ -155,7 +168,9 @@ public class DirectlyInsideSlotState : BallMovement
 	private void MoveFinalPoint()
 	{
 		movePosition = finalReachedPoint.position;
-		movePosition.y = hitPoint;
+		movePosition.y = hitPoint - 0.02f;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
+		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.6f);
 		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f)
 		{
@@ -164,19 +179,6 @@ public class DirectlyInsideSlotState : BallMovement
 		}
 	}
 
-	// Ball nove in slot
-	void MoveBallInSlot()
-	{
-		movePosition = slotInPosition.position;
-		movePosition.y = hitPoint;
-		tempdir = Vector3.Normalize (transform.position - movePosition);
-		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
-		transform.position = Vector3.Slerp(transform.position, movePosition, Time.deltaTime*1.2f);
-		if (Vector3.Magnitude (transform.position - movePosition) < 0.15f) {
-			curMovementState = MovementState.InsideSlot;
-
-		}
-	}
 
 	#endregion
 

@@ -55,8 +55,13 @@ public class BallMovementController : MonoBehaviour
 		//directlyInsideSlotState.Int();
 		//directlyInsideSlotState.enabled = true;
 
-		//doubleHoleDoubleJumpState.Reset();
-		doubleHoleDoubleJumpState.enabled = true;
+		//doubleHoleDoubleJumpState.Int();
+		//doubleHoleDoubleJumpState.enabled = true;
+
+		//singleHoleSingleJumpState.enabled = true;
+
+		singleHoleDoubleJumpState.enabled = true;
+
 	}
 
 	public void ChangeMovementState()

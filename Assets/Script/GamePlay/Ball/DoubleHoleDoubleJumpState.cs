@@ -183,9 +183,8 @@ public class DoubleHoleDoubleJumpState : BallMovement
 		}
 
 		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
+		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
 		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
-
-
 	}
 
 	// when hit the knob the move up and down
@@ -212,6 +211,27 @@ public class DoubleHoleDoubleJumpState : BallMovement
 		curRadiusState = RadiusState.DecRadius;
 	}
 
+	// move ball in curve to enter in slot
+	void MoveBallInCurve()
+	{
+		movePosition = movePoint [0].position;
+		movePosition.y = hitPoint - 0.02f;
+		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.2f) {
+			curMovementState = MovementState.InSlotMovement;
+		}
+
+	}
+
+	// enter in the slot
+	void MoveBallInSlot()
+	{
+		movePosition = movePoint [1].position;
+		movePosition.y = hitPoint - 0.02f;
+		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
+
+	}
+
 	//when hitting the collider moveup , middle and down 
 	void JumpUpSide()
 	{
@@ -236,39 +256,19 @@ public class DoubleHoleDoubleJumpState : BallMovement
 	void MoveDownSide()
 	{
 		movePosition = ballholder.doubleJump [2].transform.position;
-		movePosition.y = hitPoint;
+		movePosition.y = hitPoint - 0.02f;
 		transform.position = Vector3.MoveTowards (transform.position, movePosition, Time.deltaTime*(0.6f));
 		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f) {
 			curMovementState = MovementState.InsideSlotMove;
+			rigidbody.isKinematic = false;
 		}
-	}
-
-	// move ball in curve to enter in slot
-	void MoveBallInCurve()
-	{
-		movePosition = movePoint [0].position;
-		movePosition.y = hitPoint;
-		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
-		if (Vector3.Magnitude (transform.position - movePosition) < 0.2f) {
-			curMovementState = MovementState.InSlotMovement;
-		}
-
-	}
-
-	// enter in the slot
-	void MoveBallInSlot()
-	{
-		movePosition = movePoint [1].position;
-		movePosition.y = hitPoint;
-		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
-
 	}
 
 	// move inside slot
 	void MoveBallInsideSlot()
 	{
 		movePosition = finalObject.transform.position;
-		movePosition.y = hitPoint;
+		movePosition.y = hitPoint - 0.02f;
 		tempdir = Vector3.Normalize (transform.position - movePosition);
 		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.8f);
@@ -282,7 +282,9 @@ public class DoubleHoleDoubleJumpState : BallMovement
 	private void MoveFinalPoint()
 	{
 		movePosition = finalReachedPoint.position;
-		movePosition.y = hitPoint;
+		movePosition.y = hitPoint -0.02f;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
+		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
 		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.6f);
 		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f)
 		{
@@ -352,6 +354,18 @@ public class DoubleHoleDoubleJumpState : BallMovement
 					if (col.gameObject.name.Equals ("Obstacle3")) 
 					{
 						curHitState = HitState.Obstacle;
+						if(rotationSpeed >= 2f )
+						{
+							reduceSpeedFactor = reduceSpeedFactor * 2.8f;
+						}
+						else if((rotationSpeed >= 1.5f) && (rotationSpeed < 2f))
+						{
+							reduceSpeedFactor = reduceSpeedFactor * 2.2f;
+						}
+						else if((rotationSpeed >= 1f) && (rotationSpeed < 1.5f))
+						{
+							reduceSpeedFactor = reduceSpeedFactor * 1.6f;
+						}
 					}
 				} 
 				else if (col.gameObject.tag.Equals ("Cone")) 
