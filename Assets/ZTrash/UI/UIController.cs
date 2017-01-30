@@ -27,8 +27,9 @@ public class UIController : MonoBehaviour {
 
 	public void OnStart()
 	{
-		BallMovementController.Instance.StartBallMovemnt ();
 		GameController.Instance.rouletteRotation.rotationSpeed = 100f;
+		GameController.Instance.rouletteRotation.Reset ();
+		BallMovementController.Instance.StartBallMovemnt ();
 	}
 
 	public void OnStop()
@@ -39,8 +40,8 @@ public class UIController : MonoBehaviour {
 
 	public void OnRestart()
 	{
-		//BallMovementController.Instance.StartBallMovemnt ();
-		SceneManager.LoadScene(0);
+		BallMovementController.Instance.StartBallMovemnt ();
+		//SceneManager.LoadScene(0);
 	}
 
 }

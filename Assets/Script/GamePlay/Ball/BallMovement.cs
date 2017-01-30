@@ -21,6 +21,12 @@ public abstract class BallMovement : MonoBehaviour
 	protected float angle;
 	public float hitPoint;
 	protected Vector3 tempdir;
+	protected Vector3 movePositionUp;
+	protected Vector3 movePositionDown;
+	protected Vector3 movePosition;
+	public BallHolder ballholder;
+
+	protected KnobController knobController;
 
 	public virtual void OnStageChanege()
 	{

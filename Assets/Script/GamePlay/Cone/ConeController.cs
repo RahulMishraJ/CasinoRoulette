@@ -32,36 +32,37 @@ public class ConeController : MonoBehaviour
 
 
 		// going inside with jump
-//		private void OnRotateSecondCone(int number)
-//		{
-//		Debug.Log("number secondcone...."+number);
-//			numeberSecondCone = number - 10;//8
-//		Debug.Log("number secondcone...."+numeberSecondCone);
-//
-//			if (numeberSecondCone < 1) {
-//			
-//				numeberSecondCone = 37 + numeberSecondCone;
-//			}
-//			obstacle[0].transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
-//			obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+7) * eachNumberAngle, 0);
-//		}
-//
+		private void OnRotateSecondCone(int number)
+		{
+		Debug.Log("number secondcone...."+number);
+			numeberSecondCone = number - 10;//8
+		Debug.Log("number secondcone...."+numeberSecondCone);
+
+			if (numeberSecondCone < 1) {
+			
+				numeberSecondCone = 37 + numeberSecondCone;
+			}
+			obstacle[0].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+6) * eachNumberAngle, 0);
+			obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+8) * eachNumberAngle, 0);
+			obstacle[2].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+1) * eachNumberAngle, 0);
+		}
+
 
 
 
 
 	// dirctly InsideSlot
-	private void OnRotateSecondCone(int number)
-	{
-		numeberSecondCone = number - 15;
-		if (numeberSecondCone < 1) {
-		
-			numeberSecondCone = 37 + numeberSecondCone;
-		}
-		obstacle[0].transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
-		obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+4) * eachNumberAngle, 0);
-		obstacle[2].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+7) * eachNumberAngle, 0);
-		obstacle[3].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+14) * eachNumberAngle, 0);
-	}
-
+//	private void OnRotateSecondCone(int number)
+//	{
+//		numeberSecondCone = number - 15;
+//		if (numeberSecondCone < 1) {
+//		
+//			numeberSecondCone = 37 + numeberSecondCone;
+//		}
+//		obstacle[0].transform.localEulerAngles = new Vector3 (0, numeberSecondCone * eachNumberAngle, 0);
+//		obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+3) * eachNumberAngle, 0);
+//		obstacle[2].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+5) * eachNumberAngle, 0);
+//		obstacle[3].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+14) * eachNumberAngle, 0);
+//	}
+//
 }

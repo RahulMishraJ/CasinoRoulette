@@ -8,6 +8,8 @@ public class DirectlyInsideSlotState : BallMovement
 	{
 		Normal =0,
 		InSlot,
+		MoveUp,
+		MoveDown,
 		InsideSlot,
 		FinalPosition,
 		None,
@@ -28,21 +30,43 @@ public class DirectlyInsideSlotState : BallMovement
 
 	private Vector3 startPosition;
 
-	public float reduceSpeedFactor;
 
+	private float reduceSpeedFactor;
 	private float minimumSpeed;
+
+	private int count = 0;
+
 
 	void Start()
 	{
-		reduceSpeedFactor = rotationSpeed / 320f;//500
 		startPosition = transform.position;
-		minimumSpeed = 0.2f;
-		initialMovementTime = Random.Range (10f, 15f);
+		Int ();
+	}
+
+	// initialisation
+
+	public void Int()
+	{
+		hitPoint = 2f;
 		rigidbody = this.GetComponent<Rigidbody> ();
+		minimumSpeed = 0.4f;
+		count = 0;
+		curHitState = HitState.None;
+		transform.position = startPosition;
+		curMovementState = MovementState.Normal;
+		outerRadius = 1.67f;
+		rotationSpeed = 3.4f;
+		reduceSpeedFactor = rotationSpeed / 200f;
+		slotInsideMovementSpeed = 1f;
+		timer = 0f;
+		tempTimer = 0f;
+		angle = 0;
+		initialMovementTime = Random.Range (10f, 15f);
 	}
 
 	public  void FixedUpdate ()
 	{
+		timer += Time.deltaTime*rotationSpeed;
 		if (curMovementState == MovementState.Normal) {
 			MoveAround ();
 		} else if (curMovementState == MovementState.InSlot) {
@@ -55,15 +79,12 @@ public class DirectlyInsideSlotState : BallMovement
 		FindYAxis ();
 	}
 
-	public override void OnStageChanege ()
-	{
-		base.OnStageChanege ();
-	}
 
+	#region Ball Movement
+	//Ball movement in predefine radius 
 	void MoveAround () 
 	{
 		//this.gameObject.
-		timer += Time.deltaTime*rotationSpeed;
 		angle = timer;
 		if (timer > initialMovementTime) 
 		{
@@ -89,47 +110,75 @@ public class DirectlyInsideSlotState : BallMovement
 		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
 		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
 
+	}
 
+	// when hit the knob the move up and down
+	private void OnMoveUp()
+	{
+		LeanTween.move (this.gameObject, movePositionUp, 0.04f).setOnComplete(OnCompleteMoveUp);
+	}
+
+	private void OnMoveDown()
+	{
+
+		LeanTween.move (this.gameObject, movePositionDown, 0.04f).setOnComplete(OnCompleteMoveDown);
+	}
+
+	private void OnCompleteMoveUp()
+	{
+		OnMoveDown ();
+	}
+
+	private void OnCompleteMoveDown()
+	{
+		rotationSpeed = 2.5f;
+		curMovementState = MovementState.Normal;
 	}
 
 
-	Vector3 tempPos;
+	// Ball movement inside slot
 	void MoveBallInsideSlot()
 	{
-		//Debug.Log ("MoveBallInsideSlot");
-		tempPos = finalObject.transform.position;
-		tempPos.y = hitPoint;
-		tempdir = Vector3.Normalize (transform.position - tempPos);
+		movePosition = finalObject.transform.position;
+		movePosition.y = hitPoint;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
 		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
-		//rigidbody.AddForce(-tempdir*Time.deltaTime*20f);
-		transform.position = Vector3.Lerp(transform.position, tempPos, Time.deltaTime*0.6f);
-
-		//Debug.Log ("Distance....." + Vector3.Magnitude (transform.position - tempPos));
-		if (Vector3.Magnitude (transform.position - tempPos) < 0.3f) {
+		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.8f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.3f) {
 			curMovementState = MovementState.FinalPosition;
 			rigidbody.isKinematic = true; 
-			//MoveFinalPoint ();
-			//this.transform.position = finalReachedPoint.position;
 		}
 
-
-		//this.GetComponent<Rigidbody>().AddRelativeTorque (tempdir);
-		//transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		//transform.position = Vector3.Lerp (transform.position, finalObject.transform.position,Time.deltaTime*slotInsideMovementSpeed);
 	}
 
+	// Ball move to last point
 	private void MoveFinalPoint()
 	{
-		//Debug.Log ("MoveFinalPoint");
-		tempPos = finalReachedPoint.position;
-		tempPos.y = hitPoint;
-		transform.position = Vector3.Lerp(transform.position, tempPos, Time.deltaTime*0.6f);
-		//Debug.Log ("Distance....." + Vector3.Magnitude (transform.position - tempPos));
-		if (Vector3.Magnitude (transform.position - tempPos) < 0.05f)
+		movePosition = finalReachedPoint.position;
+		movePosition.y = hitPoint;
+		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.6f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f)
 		{
-				curMovementState = MovementState.None;		
+			curMovementState = MovementState.None;
+			OnComplete ();
 		}
 	}
+
+	// Ball nove in slot
+	void MoveBallInSlot()
+	{
+		movePosition = slotInPosition.position;
+		movePosition.y = hitPoint;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
+		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
+		transform.position = Vector3.Slerp(transform.position, movePosition, Time.deltaTime*1.2f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.15f) {
+			curMovementState = MovementState.InsideSlot;
+
+		}
+	}
+
+	#endregion
 
 	private void OnComplete()
 	{
@@ -137,101 +186,88 @@ public class DirectlyInsideSlotState : BallMovement
 	}
 
 
-	void MoveBallInSlot()
+	public override void OnStageChanege ()
 	{
-		//Debug.Log("Move ball in slot");
-		tempPos = slotInPosition.position;
-		tempPos.y = hitPoint;
-		tempdir = Vector3.Normalize (transform.position - tempPos);
-		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
-		transform.position = Vector3.Slerp(transform.position, tempPos, Time.deltaTime*1f);
-
-		//Debug.Log ("Distance....." + Vector3.Magnitude (transform.position - tempPos));
-		if (Vector3.Magnitude (transform.position - tempPos) < 0.15f) {
-			curMovementState = MovementState.InsideSlot;
-
-		}
-
-
-		//this.GetComponent<Rigidbody>().AddRelativeTorque (tempdir);
-		//transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		//transform.position = Vector3.Lerp (transform.position, finalObject.transform.position,Time.deltaTime*slotInsideMovementSpeed);
+		base.OnStageChanege ();
 	}
 
 
-	public int count = 0;
 
 	void OnTriggerEnter(Collider col)
 	{
-		//Debug.Log ("OnTriggerEnter"+col.gameObject.tag);
-		if(this.enabled)
+		if (this.enabled) 
 		{
-			if (col.gameObject.tag.Equals ("Cone")) {
+			if (col.gameObject.tag.Equals ("Cone")) 
+			{
 				if (curHitState == HitState.Obstacle) {
 					rotationSpeed = 0;
 					curMovementState = MovementState.InsideSlot;
 					rigidbody.isKinematic = false; 
-					col.gameObject.GetComponent<MeshCollider> ().enabled = false;
 				}
 			} 
 			else if (col.gameObject.tag.Equals ("InsideObstacle")) 
 			{
-			//	Debug.Log ("In slot");
 				curMovementState = MovementState.InSlot;
-				col.gameObject.GetComponent<MeshCollider> ().enabled = false;
-			}
+			} 
 			else if (col.gameObject.tag.Equals ("Obstacle")) 
 			{
-				col.gameObject.GetComponent<MeshCollider> ().enabled = false;
-				//Debug.Log ("Decrease Reduce Factor......");
 				count++;
 				if (count == 1) {
-					if (rotationSpeed > 3f) {
+					if (rotationSpeed > 2f) {
+						reduceSpeedFactor = reduceSpeedFactor * 12f;
+					} else if ((rotationSpeed > 1.4f) && (rotationSpeed < 2f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 10f;
+					} else if ((rotationSpeed > 0.8f) && (rotationSpeed < 1.4f)) {
 						reduceSpeedFactor = reduceSpeedFactor * 8f;
-					}
-					else if ((rotationSpeed > 2.4f) && (rotationSpeed < 3f)) {
-						reduceSpeedFactor = reduceSpeedFactor * 7f;
-					}
-					else if ((rotationSpeed > 1.8f) && (rotationSpeed < 2.4f)) {
-						reduceSpeedFactor = reduceSpeedFactor * 6f;
-					}
-					else if ((rotationSpeed > 1.6f) && (rotationSpeed < 1.8f))
-
-					{
-						reduceSpeedFactor = reduceSpeedFactor * 2.8f;
-					} else if ((rotationSpeed > 1.4f) && (rotationSpeed < 1.6f)) {
-						reduceSpeedFactor = reduceSpeedFactor * 1.5f;
-					} 
-					else if ((rotationSpeed > 1.3f) && (rotationSpeed < 1.4f)) {
-						reduceSpeedFactor = reduceSpeedFactor * 1.2f;
-					}
-					else if ((rotationSpeed > 1.1f) && (rotationSpeed < 1.3f)) {
+					} else if ((rotationSpeed > 0.6f) && (rotationSpeed < 0.8f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 4.8f;
+					} else if ((rotationSpeed > 0.4f) && (rotationSpeed < 0.6f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 2.5f;
+					} else if ((rotationSpeed > 0.3f) && (rotationSpeed < 0.4f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 0.85f;
+					} else if ((rotationSpeed > 0.1f) && (rotationSpeed < 0.3f)) {
 						reduceSpeedFactor = reduceSpeedFactor * 0.8f;
-					}
-					else if ((rotationSpeed > 0.85f) && (rotationSpeed < 1.1f)) {
+					} else if ((rotationSpeed > 0.085f) && (rotationSpeed < 0.1f)) {
 						reduceSpeedFactor = reduceSpeedFactor * 0.55f;
-					}
-					else {
+					} else {
 						reduceSpeedFactor = reduceSpeedFactor * 0.2f;
 					}
 
 				} else if (count == 2) {
 					if (rotationSpeed > 0.7f) {
-						reduceSpeedFactor = reduceSpeedFactor * 1.2f;
+						reduceSpeedFactor = reduceSpeedFactor * 5f;
 					}
-				}
-				else if (count == 3) {
-					if (rotationSpeed > 0.4f) {
-						reduceSpeedFactor = reduceSpeedFactor * 1.2f;
+					else if ((rotationSpeed > 0.5f) && (rotationSpeed < 0.7f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 3.5f;
+					} 
+				} else if (count == 3) {
+					if (rotationSpeed > 0.5f) {
+						reduceSpeedFactor = reduceSpeedFactor * 5f;
 					}
-					minimumSpeed = 0.1f;
+					else if ((rotationSpeed > 0.3f) && (rotationSpeed < 0.5f)) {
+						reduceSpeedFactor = reduceSpeedFactor * 3.5f;
+					}
+					minimumSpeed = 0.15f;
 				}
 				//reduceSpeedFactor = rotationSpeed*2f;
 				curHitState = HitState.Obstacle;
 			}
-		}
-		//base.OnStageChanege ();
+			else if (col.gameObject.tag.Equals ("Knob")) 
+			{
+				Debug.Log ("Hitting Knob ....");
+				curMovementState = MovementState.None;
+				outerRadius = 1.5f;
+				rotationSpeed = 2.0f;
+				knobController = col.gameObject.GetComponent<KnobController> ();
+				movePositionUp = knobController.upPosition [0].position;
+				movePositionDown = knobController.downPosition [0].position;
+				OnMoveUp ();
+			}
+		} 
+
 	}
+
+	// y hit point 
 
 	void FindYAxis()
 	{
@@ -240,9 +276,7 @@ public class DirectlyInsideSlotState : BallMovement
 
 		if (Physics.Raycast (downRay, out hit,1000f)) 
 		{
-			hitPoint = hit.point.y  +0.02f;
-			//Debug.LogError ("coming inside...");
-			//Debug.DrawLine (transform.position, hit.point, Color.red, 20f);
+			hitPoint = hit.point.y  +0.06f;
 		}
 	}
 
@@ -252,20 +286,6 @@ public class DirectlyInsideSlotState : BallMovement
 		//Invoke("Reset");
 	}
 
-	public void Reset()
-	{
-		count = 0;
-		curHitState = HitState.None;
-		transform.position = startPosition;
-		curMovementState = MovementState.Normal;
-		outerRadius = 1.4f;
-		rotationSpeed = 4f;
-		reduceSpeedFactor = rotationSpeed / 500f;
-		slotInsideMovementSpeed = 1f;
-		timer = 0f;
-		tempTimer = 0f;
-		angle = 0;
-		initialMovementTime = Random.Range (5f, 10f);
-	}
+
 
 }

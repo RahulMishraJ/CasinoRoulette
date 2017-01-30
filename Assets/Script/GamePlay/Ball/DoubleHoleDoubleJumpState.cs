@@ -6,18 +6,16 @@ public class DoubleHoleDoubleJumpState : BallMovement
 {
 	public enum MovementState
 	{
-		Normal =0,
+		None =0,
+		Normal,
 		PositionMatch,
-		MoveUpSide,
-		MoveDownSide,
-		InsideSlotMoveUp,
-		InsideSlotMoveMiddle,
-		InsideSlotMoveDown,
-		InsdieSlotMoveNormal,
 		InsideSlotMove,
-		SlerpMovement,
-		SlerpMovementSecond,
-		None,
+		CurveMovement,
+		InSlotMovement,
+		JumpUpSide,
+		MoveMiddle,
+		MoveDown,
+		FinalPosition,
 	}
 
 	public enum HitState
@@ -29,15 +27,16 @@ public class DoubleHoleDoubleJumpState : BallMovement
 	public enum RadiusState
 	{
 		None =0,
-		FisrtTime,
-		SecondTime,
-		ThirdTime,
-		FourthTime,
+		InitialDecRadius,
+		DecRadius,
+		IncRadius,
+		DecRadiusSpeed,
+		DecRadiusSpeedInc,
 	}
 		
 
 	public MovementState curMovementState;
-	private HitState curHitState;
+	public HitState curHitState;
 	public RadiusState curRadiusState; 
 
 	public Transform[] movePoint; 
@@ -46,8 +45,6 @@ public class DoubleHoleDoubleJumpState : BallMovement
 
 	private Vector3 startPosition;
 
-	private Vector3 lerpPositionUp;
-	private Vector3 lerpPositionDown;
 
 	private float decSpeedCollision = 2f;
 
@@ -56,94 +53,118 @@ public class DoubleHoleDoubleJumpState : BallMovement
 
 	private float reduceSpeedFactor;
 
-
+	public bool firsttimehit = false;
+	private float radiusdec;
 	private float timetake = 0.2f;
 
 	void Start()
 	{
-		reduceSpeedFactor = rotationSpeed / 600f;
-
 		startPosition = transform.position;
+		Int ();
+	}
+
+	public void Int()
+	{
+		curRadiusState = RadiusState.InitialDecRadius;
+		curHitState = HitState.None;
+		transform.position = startPosition;
+		curMovementState = MovementState.Normal;
+		outerRadius = 1.67f;
+		rotationSpeed = 3.4f;
+		reduceSpeedFactor = rotationSpeed / 350f;
+		slotInsideMovementSpeed = 1f;
+		timer = 0f;
+		tempTimer = 0f;
+		angle = 0;
 		initialMovementTime = Random.Range (10f, 15f);
 		rigidbody = this.GetComponent<Rigidbody> ();
-		hitPoint = 0.5f;
+		hitPoint = 2f;
+		firsttimehit = false;
+
 	}
+
 
 	public  void FixedUpdate ()
 	{
 		FindYAxis ();
-	//	Debug.Log ("Timer...."+timer);
-		if (curMovementState == MovementState.Normal) {
-			timer += Time.deltaTime*rotationSpeed;
+		timer += Time.deltaTime*rotationSpeed;
+		if (curMovementState == MovementState.Normal) 
+		{
 			MoveAround ();
-		} else if (curMovementState == MovementState.MoveUpSide) {
-			timer += Time.deltaTime*rotationSpeed;
-			MoveUpside ();
-		} else if (curMovementState == MovementState.MoveDownSide) {
-			timer += Time.deltaTime*rotationSpeed;
-			MoveDownSide ();
-		} else if (curMovementState == MovementState.InsideSlotMoveUp) {
-			timer += Time.deltaTime*rotationSpeed;
-			JumpUpSide ();
-			//transform.position -= tempdir * Time.deltaTime * 0.2f;
-			//MoveBallInsideSlot();
 		} 
-		else if (curMovementState == MovementState.InsideSlotMoveMiddle) {
-			timer += Time.deltaTime*rotationSpeed;
-			JumpMiddleSide ();
-		}
-		else if (curMovementState == MovementState.InsideSlotMoveDown) {
-			timer += Time.deltaTime*rotationSpeed;
-			JumpDownSide ();
-		} else if (curMovementState == MovementState.InsdieSlotMoveNormal) {
-			timer += Time.deltaTime*rotationSpeed;
-			MoveInsideSlot ();
-		} else if (curMovementState == MovementState.InsideSlotMove) {
-			timer += Time.deltaTime*rotationSpeed;
+		else if (curMovementState == MovementState.InsideSlotMove) 
+		{
 			MoveBallInsideSlot ();
-		} else if (curMovementState == MovementState.PositionMatch) {
-			timer += Time.deltaTime*rotationSpeed;
-			PositionMatch ();
 		}
-		else if (curMovementState == MovementState.SlerpMovement) {
-			timer += Time.deltaTime*rotationSpeed;
-			MoveBall ();
+		else if (curMovementState == MovementState.CurveMovement) 
+		{
+			MoveBallInCurve ();
 		}
-		else if (curMovementState == MovementState.SlerpMovementSecond) {
-			timer += Time.deltaTime*rotationSpeed;
-			MoveBallTwoPoint ();
+		else if (curMovementState == MovementState.InSlotMovement) 
+		{
+			MoveBallInSlot ();
 		}
-		//FindYAxis ();
+		else if (curMovementState == MovementState.JumpUpSide) 
+		{
+			JumpUpSide ();
+		}
+		else if (curMovementState == MovementState.MoveMiddle) 
+		{
+			MoveMiddleSide ();
+		}
+		else if (curMovementState == MovementState.MoveDown) {
+			MoveDownSide ();
+		}
+		else if (curMovementState == MovementState.FinalPosition) {
+			MoveFinalPoint ();
+		}
+			
 	}
 
-	public override void OnStageChanege ()
-	{
-		base.OnStageChanege ();
-	}
-
+	#region Ball Movement
+	//Ball movement in predefine radius 
 	void MoveAround () 
 	{
-		//Debug.Log ("Move Around...."+angle);
-		//this.gameObject.
-		//timer += Time.deltaTime*rotationSpeed;
 
 		angle = timer;
-		if (curRadiusState == RadiusState.FisrtTime) {
+		if (curRadiusState == RadiusState.InitialDecRadius) {
+			if (timer > initialMovementTime) 
+			{
+				if (!GameController.Instance.rouletteRotation.canSpeedReduced) 
+				{
+					GameController.Instance.rouletteRotation.ReduceSpeed ();
+				}
+				tempTimer = timer - initialMovementTime;
+				tempTimer = tempTimer / 4000.0f;
+			
+				outerRadius = outerRadius - tempTimer;
+				if (outerRadius < 1.6f) {
+					outerRadius = 1.6f;
+				}
+			}
+		
+		}
+		else if (curRadiusState == RadiusState.DecRadius) {
 			tempTimer = timer;
 			tempTimer = tempTimer / 400.0f;
 			outerRadius = outerRadius - tempTimer;
-			if (outerRadius < 1.25f) {
+			if (outerRadius < 1.45f) {
 				//outerRadius = 1.2f;
-				curRadiusState = RadiusState.SecondTime;
+				curRadiusState = RadiusState.IncRadius;
+				if (rotationSpeed < 0.8f)
+					rotationSpeed = 0.8f;
 			}
-		} else if (curRadiusState == RadiusState.SecondTime) {
+		} else if (curRadiusState == RadiusState.IncRadius) {
 			tempTimer = timer;
 			tempTimer = tempTimer / 1000.0f;
 			outerRadius = outerRadius + tempTimer;
-			if (outerRadius < 1.35f) {
-				curRadiusState = RadiusState.ThirdTime;
+			if (outerRadius < 1.55f) {
+				curRadiusState = RadiusState.DecRadiusSpeed;
+				rotationSpeed = rotationSpeed - reduceSpeedFactor;
+				if (rotationSpeed < 0.8f)
+					rotationSpeed = 0.8f;
 			}
-		} else if (curRadiusState == RadiusState.ThirdTime) {
+		} else if (curRadiusState == RadiusState.DecRadiusSpeed) {
 			tempTimer = timer;
 			tempTimer = tempTimer / 10000.0f;
 			outerRadius = outerRadius - tempTimer;
@@ -153,172 +174,132 @@ public class DoubleHoleDoubleJumpState : BallMovement
 			if (rotationSpeed < 0.8f)
 				rotationSpeed = 0.8f;
 
-//			if (outerRadius < 1.35f) {
-//				curRadiusState = RadiusState.ThirdTime;
-//			}
 		} 
-		else if (curRadiusState == RadiusState.FourthTime) 
+		else if (curRadiusState == RadiusState.DecRadiusSpeedInc) 
 		{
 			//tempTimer = timer;
 			tempTimer = radiusdec / 60f;
 			outerRadius = outerRadius - tempTimer;
 		}
 
-
-
-
-		//Debug.Log ("angle...."+angle +"...."+(angle*180)/Mathf.PI);
 		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
-		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
 		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
 
 
 	}
 
-	void MoveUpside()
+	// when hit the knob the move up and down
+	private void OnMoveUp()
 	{
-		transform.position = Vector3.Lerp (transform.position, lerpPositionUp, Time.deltaTime*10f);
-		if (Vector3.Magnitude (transform.position - lerpPositionUp) < 0.1f)
-			curMovementState = MovementState.MoveDownSide;
-		//Debug.Log ("Position....."+Vector3.Magnitude(transform.position - lerpPositionUp));
+		LeanTween.move (this.gameObject, movePositionUp, 0.04f).setOnComplete(OnCompleteMoveUp);
+	}
+
+	private void OnMoveDown()
+	{
+
+		LeanTween.move (this.gameObject, movePositionDown, 0.04f).setOnComplete(OnCompleteMoveDown);
+	}
+
+	private void OnCompleteMoveUp()
+	{
+		OnMoveDown ();
+	}
+
+	private void OnCompleteMoveDown()
+	{
+		rotationSpeed = 2.5f;
+		curMovementState = MovementState.Normal;
+		curRadiusState = RadiusState.DecRadius;
+	}
+
+	//when hitting the collider moveup , middle and down 
+	void JumpUpSide()
+	{
+		transform.position = Vector3.MoveTowards (transform.position, ballholder.doubleJump[0].transform.position, Time.deltaTime*(0.6f));
+		if (Vector3.Magnitude (transform.position - ballholder.doubleJump[0].transform.position) < 0.1f) {
+			curMovementState = MovementState.MoveMiddle;
+		}
+	
+	}
+
+
+	void MoveMiddleSide()
+	{
+		transform.position = Vector3.MoveTowards (transform.position, ballholder.doubleJump[1].transform.position, Time.deltaTime*(0.6f));
+		if (Vector3.Magnitude (transform.position - ballholder.doubleJump[1].transform.position) < 0.1f) {
+			curMovementState = MovementState.MoveDown;
+		}
+
+	
 	}
 
 	void MoveDownSide()
 	{
-		transform.position = Vector3.Lerp (transform.position, lerpPositionDown, Time.deltaTime*10f);
-		if (Vector3.Magnitude (transform.position - lerpPositionUp) < 0.1f) {
-
-//			GameObject obj = new GameObject ("Test");
-//			angle = timer;
-//			obj.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
-
-
-			curMovementState = MovementState.Normal;
-		
-			curRadiusState = RadiusState.FisrtTime;
-
-			//curMovementState = MovementState.PositionMatch;
+		movePosition = ballholder.doubleJump [2].transform.position;
+		movePosition.y = hitPoint;
+		transform.position = Vector3.MoveTowards (transform.position, movePosition, Time.deltaTime*(0.6f));
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f) {
+			curMovementState = MovementState.InsideSlotMove;
 		}
 	}
 
-	void PositionMatch()
+	// move ball in curve to enter in slot
+	void MoveBallInCurve()
 	{
-		angle = timer;
-	//	Debug.Log ("Pos-->>"+new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), 0.2f,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
-		transform.position = Vector3.Lerp (transform.position, new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), 0.2f,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))), Time.deltaTime*15f);
-
-		Debug.Log ("position...."+Vector3.Magnitude(transform.position - new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius),hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)))));
-		if(Vector3.Magnitude(transform.position - new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)))) < 0.1f)
-		{
-			//curMovementState = MovementState.Normal;
-
-			//curRadiusState = RadiusState.FisrtTime;
-
-			curMovementState = MovementState.Normal;
-			//curRadiusState = RadiusState.None;
-
+		movePosition = movePoint [0].position;
+		movePosition.y = hitPoint;
+		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.2f) {
+			curMovementState = MovementState.InSlotMovement;
 		}
 
-
 	}
-		
-	private int tweenID;
 
-	void JumpUpSide()
+	// enter in the slot
+	void MoveBallInSlot()
 	{
-		Debug.Log ("Jump up side..start..."+ballholder.doubleJump[0].gameObject.name);
-		tweenID = LeanTween.move (this.gameObject, ballholder.doubleJump [0].transform.position, .2f).setOnComplete (JumpMiddleSide).setEase(LeanTweenType.easeInCirc).id;
-//		transform.position = Vector3.MoveTowards (transform.position, ballholder.doubleJump[0].transform.position, Time.deltaTime*0.8f);
-//		Debug.Log ("differ"+Vector3.Magnitude(transform.position - ballholder.doubleJump[0].transform.position));
-//		if (Vector3.Magnitude (transform.position - ballholder.doubleJump[0].transform.position) < 0.05f) {
-//			Debug.Log ("Jump up side..complete...");
-//
-//			//curMovementState = MovementState.InsideSlotMoveMiddle;
-//			//rotationSpeed = 0.6f;
-//			JumpMiddleSide();
-//		}
-	
+		movePosition = movePoint [1].position;
+		movePosition.y = hitPoint;
+		transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
+
 	}
 
-
-
-	void JumpMiddleSide()
-	{
-		Debug.Log ("Jump middle side....start.");
-		tweenID = LeanTween.move (this.gameObject, ballholder.doubleJump [1].transform.position, 0.2f).setOnComplete (JumpDownSide).setEase(LeanTweenType.easeInCirc).id;
-
-//		Debug.Log ("Jump middle side..start...");
-//		transform.position = Vector3.MoveTowards (transform.position, ballholder.doubleJump[1].transform.position, Time.deltaTime*0.8f);
-//		if (Vector3.Magnitude (transform.position - ballholder.doubleJump[1].transform.position) < 0.01f) {
-//			Debug.Log ("Jump middle side..complete...");
-//			curMovementState = MovementState.InsideSlotMoveDown;
-//		}
-	
-	}
-
-	void JumpDownSide()
-	{
-		Debug.Log ("Jump down side....start.");
-		tweenID = LeanTween.move (this.gameObject, ballholder.doubleJump [2].transform.position, timetake).setOnComplete (OnAllComplete).setEase(LeanTweenType.linear).id;
-
-//		transform.position = Vector3.MoveTowards (transform.position, ballholder.doubleJump[2].transform.position, Time.deltaTime*0.8f);
-//		tempdir = new Vector3(0.2f,0f, -0.5f);
-//		tempdir.y = 0;
-//		if (Vector3.Magnitude (transform.position - ballholder.doubleJump[2].transform.position) < 0.01f) {
-//
-//			Debug.Log ("Jump down side....complete.");
-//			curMovementState = MovementState.InsdieSlotMoveNormal;
-//			firsttimehit = false;
-//		}
-	}
-
-
-	void OnAllComplete()
-	{
-		Debug.Log ("On Allcomplete...");
-		firsttimehit = false;
-		curMovementState = MovementState.InsdieSlotMoveNormal;
-	}
-
-	Vector3 tempslot;
-
-	void MoveInsideSlot()
-	{
-		Debug.Log ("move inside slot...."+tempdir);
-		//transform.position -= tempdir * Time.deltaTime * 0.2f;
-		//curMovementState = MovementState.InsdieSlotMoveNormal;
-		//tempslot = transform.position;
-		//tempslot.y += 0.001f;
-		//transform.position = tempslot; 
-	
-	}
-
-
+	// move inside slot
 	void MoveBallInsideSlot()
 	{
-		//Debug.Log ("Move ball inside slot.......");
-		tempdir = Vector3.Normalize (transform.position - finalObject.transform.position);
-		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*20f);
-		tweenID = LeanTween.move (this.gameObject, finalObject.transform.position,2f).id;
-		//rigidbody.AddForce(-tempdir*Time.deltaTime*20f);
-		//rigidbody.useGravity = false;
-		//transform.position = Vector3.Lerp (transform.position, finalObject.transform.position,Time.deltaTime*2f);
-		//Debug.Log ("Distance....." + Vector3.Magnitude (transform.position - finalObject.transform.position));
-		if (Vector3.Magnitude (transform.position - finalObject.transform.position) < 0.1f) {
-
-			curMovementState = MovementState.None;
-			Debug.Log ("complete......");
-			base.OnStageChanege ();
+		movePosition = finalObject.transform.position;
+		movePosition.y = hitPoint;
+		tempdir = Vector3.Normalize (transform.position - movePosition);
+		rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
+		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.8f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.3f) {
+			curMovementState = MovementState.FinalPosition;
 			rigidbody.isKinematic = true; 
 		}
+	}
 
-
-		//this.GetComponent<Rigidbody>().AddRelativeTorque (tempdir);
-		//transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		//transform.position = Vector3.Lerp (transform.position, finalObject.transform.position,Time.deltaTime*slotInsideMovementSpeed);
+	// move to the final point
+	private void MoveFinalPoint()
+	{
+		movePosition = finalReachedPoint.position;
+		movePosition.y = hitPoint;
+		transform.position = Vector3.Lerp(transform.position, movePosition, Time.deltaTime*0.6f);
+		if (Vector3.Magnitude (transform.position - movePosition) < 0.05f)
+		{
+			curMovementState = MovementState.None;
+			OnComplete ();
+		}
 	}
 
 
+
+	private void OnComplete()
+	{
+		Debug.LogError ("On Complete....");
+	}
+
+	#endregion
+	// find the yHitpoint
 	void FindYAxis()
 	{
 		RaycastHit hit;
@@ -326,180 +307,72 @@ public class DoubleHoleDoubleJumpState : BallMovement
 
 		if (Physics.Raycast (downRay, out hit,1000f)) 
 		{
-			hitPoint = hit.point.y  +0.02f;
-			//Debug.LogError ("coming inside...");
-			//Debug.DrawLine (transform.position, hit.point, Color.red, 20f);
+			hitPoint = hit.point.y  +0.06f;
 		}
 	}
 
-
-	// 0.0277 0.2005 -1.3864
-	// up  -0.9,0.1,0.0   down 0,0,0.0
-	public bool firsttimehit = false;
-	private float radiusdec;
 	void OnTriggerEnter(Collider col)
 	{
-		Debug.Log ("On trigger enter...."+col.gameObject.tag);
+		Debug.Log ("On trigger enter.jump..."+col.gameObject.tag);
 		if(this.enabled)
 		{
-//			lerpPosition.x = col.gameObject.transform.position.x - 0.1f;
-//			lerpPosition.z = col.gameObject.transform.position.z - 0.1f;
-//			lerpPosition.y = col.gameObject.transform.position.y + 0.05f;
-			if (!firsttimehit) {
-				if (col.gameObject.tag.Equals ("Knob")) {
-//					lerpPositionUp = new Vector3 (-0.013f, 0.261f, -1.4f);
-//					lerpPositionDown = new Vector3 (-0.124f, -0.0085f, -1.398f);
 
-					lerpPositionUp = col.gameObject.GetComponent<KnobController> ().uPposition.position;
-					lerpPositionDown  = col.gameObject.GetComponent<KnobController> ().downPosition.position;
+			if (!firsttimehit) 
+			{
+				if (col.gameObject.tag.Equals ("Knob")) 
+				{
+					movePositionUp = col.gameObject.GetComponent<KnobController> ().upPosition [1].position;
+					movePositionDown = col.gameObject.GetComponent<KnobController> ().downPosition [1].position;
+					rotationSpeed = 1.8f;
+					curRadiusState = RadiusState.None;
+					curMovementState = MovementState.None;
+					OnMoveUp ();
 
-
-					rotationSpeed = rotationSpeed - decSpeedCollision;
-					//rotationSpeed = 2f;
-					curMovementState = MovementState.MoveUpSide;
-
-
-
-				} else if (col.gameObject.tag.Equals ("Collider")) {
-					//Debug.Log ("Slot........"+col.);
+				} 
+				else if (col.gameObject.tag.Equals ("Collider")) 
+				{
 					if (!firsttimehit) {
-						LeanTween.cancel (tweenID);
+						Debug.LogError ("Inside collider");
 						curRadiusState = RadiusState.None;
 						curMovementState = MovementState.None;
-						//Debug.Log ("Inside trigger...." + tempdir + "position..." + transform.position);
-//
-//						angle = timer;
-//						float angle1 = (Vector3.Angle (this.transform.position, roulette.transform.position) * 2 * Mathf.PI) / 180;
-//						Debug.Log ("angle..."+Vector3.Angle (this.transform.position, roulette.transform.position));
-//						Debug.Log ("Angle......"+angle1 + " ....x...."+(roulette.transform.position.x + Mathf.Sin(angle) * outerRadius) +"!!"+(roulette.transform.position.x + Mathf.Sin(angle+0.05f) * outerRadius));
-
-
-
 						firsttimehit = true;
-//						curMovementState = MovementState.InsideSlotMoveUp;
-//						lerpPositionDown = -tempdir * 0.01f;
-//						lerpPositionDown.y = hitPoint;
-//
-//
-//
-//						lerpPositionUp = -tempdir * 0.12f +transform.position;
-//						lerpPositionUp.y = 0.08f;
-//
-//
-//						lerpPositionDown = -tempdir * 0.24f + transform.position;
-//                    	lerpPositionDown.y = 0f;
-//						//lerpPositionUp.x += 0.03f;
-//
-//						GameObject obj = new GameObject ("Test");
-//						obj.transform.position = lerpPositionUp;
-//						obj.transform.localScale = new Vector3 (0.04f,0.04f,0.04f);
-//
-//						GameObject obj1 = new GameObject ("Test1");
-//						obj1.transform.position = lerpPositionDown;
-//						obj1.transform.localScale = new Vector3 (0.04f,0.04f,0.04f);
-//						angle -= 0.1f;
-//						GameObject obj2 = new GameObject ("Test2");
-//						obj2.transform.position = new Vector3((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius) , hitPoint, (roulette.transform.position.x + Mathf.Sin(angle) * outerRadius));
-//						obj2.transform.localScale = new Vector3 (0.04f,0.04f,0.04f);
-					//	FindHitContact();
-						ballholder = col.gameObject.GetComponent<BallHolder>();
-						JumpUpSide ();
-						//curMovementState = MovementState.InsideSlotMoveUp;
-						curMovementState = MovementState.None;
-						//Debug.Log ("lerp poistion up...."+lerpPositionUp+"....down...."+lerpPositionDown);
-
-					
+						ballholder = col.gameObject.GetComponent<BallHolder> ();
+						curMovementState = MovementState.JumpUpSide;
+			
 					}
 				}
-			}
-			if (col.gameObject.tag.Equals ("Obstacle")) 
-			{
-				Debug.Log ("Obstacle......");
-//				curRadiusState = RadiusState.FourthTime;
-//				float radius = outerRadius - 0.9f;
-//				radiusdec = outerRadius - radius;
-				curRadiusState = RadiusState.None;
-				curMovementState = MovementState.SlerpMovement;
-				//MoveBall ();
-
-			}
-			if (col.gameObject.tag.Equals ("Cone")) 
-			{
-				Debug.Log ("Cone......");
-				//LeanTween.cancel
-				LeanTween.cancel (tweenID);
-				rigidbody.isKinematic = false;
-				curMovementState = MovementState.InsideSlotMove;
-				//curMovementState = MovementState.None;
+				else if (col.gameObject.tag.Equals ("Obstacle")) 
+				{
+					Debug.Log ("Obstacle......");
+					if (curHitState == HitState.Obstacle) 
+					{
+						curRadiusState = RadiusState.None;
+						curMovementState = MovementState.CurveMovement;
+					}
+					if (col.gameObject.name.Equals ("Obstacle3")) 
+					{
+						curHitState = HitState.Obstacle;
+					}
+				} 
+				else if (col.gameObject.tag.Equals ("Cone")) 
+				{
+					Debug.Log ("Cone......");
+					rigidbody.isKinematic = false;
+					curMovementState = MovementState.InsideSlotMove;
+				}
 			}
 		}
-		//base.OnStageChanege ();
 	}
 
-
-	void MoveBall()
-	{
-		//Debug.Log ("Move Ball");
-		transform.position = Vector3.Slerp(transform.position, movePoint[0].position, Time.deltaTime*3.0f);
-		//Debug.Log ("transform.position "+Vector3.Magnitude(transform.position - movePoint[0].position));
-		if (Vector3.Magnitude (transform.position - movePoint [0].position) < 0.2f) {
 		
-			curMovementState = MovementState.None;
-
-			MoveBallTwoPoint();
-		}//
-		//tweenID = LeanTween.move (this.gameObject, movePoint.position,1f).setEase(LeanTweenType.easeInQuad ).id;
-	
-	}
-
-	void MoveBallTwoPoint()
+	public override void OnStageChanege ()
 	{
-		Debug.Log ("Move ball twopoint");
-		//transform.position = Vector3.Slerp(transform.position, movePoint[1].position, Time.deltaTime*1f);
-		tweenID = LeanTween.move (this.gameObject, movePoint[1].position,0.1f).setEase(LeanTweenType.linear ).id;
+		base.OnStageChanege ();
 	}
-
-	public LayerMask mask;
-
-	public BallHolder ballholder;
-
-	void FindHitContact()
-	{
-		RaycastHit hit;
-		Ray downRay = new Ray(transform.position, -tempdir);
-
-		Debug.DrawLine (transform.position, -tempdir*1 , Color.yellow, 100f);
-
-		if (Physics.Raycast (downRay, out hit,1000f,mask)) 
-		{
-			//hitPoint = hit.point.y ;
-
-			ballholder = hit.collider.gameObject.GetComponent<BallHolder> ();
-			//Debug.LogError ("coming contact..."+ballholder.gameObject.name);
-			//Debug.DrawLine (transform.position, hit.point, Color.red, 20f);
-		}
-	}
-
 
 	void OnDisable()
 	{
-		//Reset ();
-		//Invoke("Reset");
-	}
 
-	public void Reset()
-	{
-		curHitState = HitState.None;
-		transform.position = startPosition;
-		curMovementState = MovementState.Normal;
-		outerRadius = 1.4f;
-		rotationSpeed = 4f;
-		reduceSpeedFactor = rotationSpeed / 500f;
-		slotInsideMovementSpeed = 1f;
-		timer = 0f;
-		tempTimer = 0f;
-		angle = 0;
-		initialMovementTime = Random.Range (5f, 10f);
 	}
 
 }
