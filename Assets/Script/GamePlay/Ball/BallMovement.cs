@@ -1,61 +1,74 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Roulette.UI;
 
-public abstract class BallMovement : MonoBehaviour 
+namespace Roulette.GamePlay
 {
-
-	public GameObject roulette;
-	public GameObject finalObject;
-
-	public Transform finalReachedPoint;
-
-	public Transform[] movePoint; 
-
-	protected float outerRadius ;
-	protected float innerRadius ;
-	protected float rotationSpeed;
-	protected float ballRollingSpeed;
-	protected float slotInsideMovementSpeed;
-	protected float initialMovementTime;
-	protected float timer;
-	protected float tempTimer;
-	protected float angle;
-	protected float hitPoint;
-
-	protected Vector3 tempdir;
-	protected Vector3 movePositionUp;
-	protected Vector3 movePositionDown;
-	protected Vector3 movePosition;
-
-	protected BallHolder ballholder;
-
-	protected KnobController knobController;
-
-	public virtual void OnStageChanege()
+	public abstract class BallMovement : MonoBehaviour 
 	{
-		Debug.LogError ("On State change");
-		BallMovementController.Instance.curBallMovementState = BallMovementController.BallMovementState.Stop;
-		BallMovementController.Instance.ChangeMovementState ();
-	}
+		public GameObject roulette;
+		public GameObject finalObject;
 
-	public virtual void BallMovementCircle()
-	{
-		tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
-		transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
-		this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
-	}
+		public Transform finalReachedPoint;
+		public Transform parentModel;
 
-	// find the yHitpoint
-	public void FindYAxis()
-	{
-		RaycastHit hit;
-		Ray downRay = new Ray(transform.position, - Vector3.up);
+		public Transform[] movePoint; 
 
-		if (Physics.Raycast (downRay, out hit,1000f)) 
+		protected float outerRadius ;
+		protected float innerRadius ;
+		protected float rotationSpeed;
+		protected float ballRollingSpeed;
+		protected float slotInsideMovementSpeed;
+		protected float initialMovementTime;
+		protected float timer;
+		protected float tempTimer;
+		protected float angle;
+		protected float hitPoint;
+
+		protected Vector3 tempdir;
+		protected Vector3 movePositionUp;
+		protected Vector3 movePositionDown;
+		protected Vector3 movePosition;
+
+		protected BallHolder ballholder;
+
+		protected KnobController knobController;
+
+		public virtual void OnStageChanege()
 		{
-			hitPoint = hit.point.y  +0.06f;
+			Debug.LogError ("On State change");
+			BallMovementController.Instance.curBallMovementState = BallMovementController.BallMovementState.Stop;
+			BallMovementController.Instance.ChangeMovementState ();
+			UIController.Instance.panelCell [0].ClickableButton ();
+		}
+
+		public virtual void BallMovementCircle()
+		{
+			tempdir = Vector3.Normalize (transform.position -  new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius))));
+			transform.RotateAround (this.transform.position, tempdir , Time.deltaTime*ballRollingSpeed);
+			this.transform.position = new Vector3 ((roulette.transform.position.x + Mathf.Sin(angle) * outerRadius), hitPoint,((roulette.transform.position.z + Mathf.Cos(angle) * outerRadius)));
+		}
+
+		// find the yHitpoint
+		public void FindYAxis()
+		{
+			RaycastHit hit;
+			Ray downRay = new Ray(transform.position, - Vector3.up);
+			if (Physics.Raycast (downRay, out hit,1000f)) 
+			{
+				hitPoint = hit.point.y  +0.06f;
+			}
+		}
+
+		public void AddRouletteChild()
+		{
+			this.transform.parent = roulette.transform;
+		}
+
+		public void DeAttachedChild()
+		{
+			this.transform.parent = parentModel;
 		}
 	}
-
 }

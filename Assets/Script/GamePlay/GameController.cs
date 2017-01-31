@@ -2,47 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour 
+namespace Roulette.GamePlay
 {
-	private static GameController _instance;
-
-	public static GameController Instance
+	public class GameController : MonoBehaviour 
 	{
-		get
-		{ 
-			return INIT ();
-		}
-		private set{ }
+		private static GameController _instance;
 
-	}
-
-	public ConeController coneController;
-	public RouletteRotation rouletteRotation;
-
-
-	public static GameController INIT()
-	{
-		if(_instance == null)
+		public static GameController Instance
 		{
-			GameObject obj = new GameObject ("GameController");
-			_instance = obj.AddComponent<GameController> ();
-		}
-		return _instance;
-	}
+			get
+			{ 
+				return INIT ();
+			}
+			private set{ }
 
-	void Awake()
-	{
-		if (_instance == null) 
-		{
-			_instance = this;
-		} 
-		else 
-		{
-			DestroyImmediate (this.gameObject);
 		}
-			
-		DontDestroyOnLoad (this);
-	}
 
+		public ConeController coneController;
+		public RouletteRotation rouletteRotation;
+
+		public static GameController INIT()
+		{
+			if(_instance == null)
+			{
+				GameObject obj = new GameObject ("GameController");
+				_instance = obj.AddComponent<GameController> ();
+			}
+			return _instance;
+		}
+
+		void Awake()
+		{
+			if (_instance == null) 
+			{
+				_instance = this;
+			} 
+			else 
+			{
+				DestroyImmediate (this.gameObject);
+			}
+				
+			//DontDestroyOnLoad (this);
+		}
+	}
 
 }

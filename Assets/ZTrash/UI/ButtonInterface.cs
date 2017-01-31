@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Roulette.UI;
 
 public class ButtonInterface : MonoBehaviour, IPointerDownHandler, ISelectHandler, IPointerEnterHandler
 {
@@ -30,8 +31,19 @@ public class ButtonInterface : MonoBehaviour, IPointerDownHandler, ISelectHandle
 	void IPointerDownHandler.OnPointerDown (PointerEventData eventData)
 	{
 		Debug.Log ("On pointer down");
-		panelcell.OnPreesed ();
+		//panelcell.OnPreesed ();
 	}
 	#endregion
-
+	//	public void OnPreesed()
+	//	{
+	//		Debug.Log ("coming here...");
+	//		SpriteState _spriteState = new SpriteState ();
+	//		Sprite spr = this.GetComponent<Button>().spriteState.pressedSprite;
+	//
+	//		buttons[0].GetComponent<Image>().sprite = spr;
+	//
+	//		Resources.UnloadAsset (spr);
+	//		//DestroyImmediate (spr,true);
+	//
+	//	}
 }
