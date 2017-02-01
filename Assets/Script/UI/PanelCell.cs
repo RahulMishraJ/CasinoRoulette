@@ -33,6 +33,11 @@ namespace Roulette.UI
 					SceneManager.LoadScene(0);
 				}
 				break;
+				case "Rotate":
+				{
+					GameController.Instance.cameramovementController.FocusRoulette();
+				}
+				break;
 			}
 		}
 

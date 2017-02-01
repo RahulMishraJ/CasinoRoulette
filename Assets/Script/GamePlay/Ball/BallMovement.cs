@@ -41,6 +41,7 @@ namespace Roulette.GamePlay
 			BallMovementController.Instance.curBallMovementState = BallMovementController.BallMovementState.Stop;
 			BallMovementController.Instance.ChangeMovementState ();
 			UIController.Instance.panelCell [0].ClickableButton ();
+			GameController.Instance.cameramovementController.Int ();
 		}
 
 		public virtual void BallMovementCircle()

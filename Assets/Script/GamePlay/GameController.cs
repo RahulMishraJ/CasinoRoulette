@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Roulette.Camera;
 
 namespace Roulette.GamePlay
 {
@@ -20,6 +21,7 @@ namespace Roulette.GamePlay
 
 		public ConeController coneController;
 		public RouletteRotation rouletteRotation;
+		public CameraMovementController cameramovementController;
 
 		public static GameController INIT()
 		{
