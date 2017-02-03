@@ -22,10 +22,9 @@ namespace Roulette.UI
 					BallMovementController.Instance.StartBallMovemnt ();
 				}
 				break;
-				case "Stop":
+				case "PlayVideo":
 				{
-					BallMovementController.Instance.curBallMovementState = BallMovementController.BallMovementState.Stop;
-					BallMovementController.Instance.ChangeMovementState ();
+					VideoController.Instance.OnPlayVideo ();
 				}
 				break;
 				case "Restart":

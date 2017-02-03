@@ -126,7 +126,10 @@ namespace Roulette.GamePlay
 			else if (curMovementState == MovementState.FinalPosition) {
 				MoveFinalPoint ();
 			}
-
+			if (rotationSpeed < 1.2f) 
+			{
+				rotationSpeed = 1.2f;
+			}
 		}
 
 		#region Ball Movement

@@ -51,7 +51,7 @@ namespace Roulette.GamePlay
 		public void StartBallMovemnt()
 		{
 			curBallMovementState = (BallMovementState)Random.Range(1, 5);
-			//curBallMovementState = BallMovementState.DirectlyInsideSlot;
+			curBallMovementState = BallMovementState.SingleHoleSingleJump;
 			ChangeMovementState ();
 			GameController.Instance.coneController.RotateCone (stopNumber);
 		}

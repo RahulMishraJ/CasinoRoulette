@@ -48,9 +48,6 @@ namespace Roulette.GamePlay
 
 		private float decSpeedCollision = 2f;
 
-		//-0.013,0.261, -1.4
-		//-0.124,0.216,-1.398
-
 		private float reduceSpeedFactor;
 
 		public bool firsttimehit = false;
@@ -116,7 +113,10 @@ namespace Roulette.GamePlay
 			else if (curMovementState == MovementState.FinalPosition) {
 				MoveFinalPoint ();
 			}
-
+			if (rotationSpeed < 1.15f) 
+			{
+				rotationSpeed = 1.15f;
+			}
 		}
 
 		#region Ball Movement

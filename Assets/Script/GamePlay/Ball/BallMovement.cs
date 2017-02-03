@@ -17,7 +17,7 @@ namespace Roulette.GamePlay
 
 		protected float outerRadius ;
 		protected float innerRadius ;
-		protected float rotationSpeed;
+		public float rotationSpeed;
 		protected float ballRollingSpeed;
 		protected float slotInsideMovementSpeed;
 		protected float initialMovementTime;

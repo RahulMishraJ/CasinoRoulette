@@ -37,7 +37,7 @@ namespace Roulette.GamePlay
 		private float reduceSpeedFactor;
 		private float minimumSpeed;
 
-		private int count = 0;
+		private int rotationCount = 0;
 
 
 		void Start()
@@ -56,7 +56,7 @@ namespace Roulette.GamePlay
 			hitPoint = 2f;
 			rigidbody = this.GetComponent<Rigidbody> ();
 			minimumSpeed = 0.4f;
-			count = 0;
+			rotationCount = 0;
 			curHitState = HitState.None;
 			transform.position = startPosition;
 			curMovementState = MovementState.Normal;
@@ -213,17 +213,23 @@ namespace Roulette.GamePlay
 				} 
 				else if (col.gameObject.tag.Equals (GameConstant.INSIDE_OBSTACLE)) 
 				{
-					AddRouletteChild ();
-					curMovementState = MovementState.InSlot;
+					Debug.Log ("Inside Obstacle....."+rotationCount);
+					if (rotationCount != 0) 
+					{
+						Debug.Log ("Inside Obstacle..inside...");
+						AddRouletteChild ();
+						curMovementState = MovementState.InSlot;
+					}
 				} 
 				else if (col.gameObject.tag.Equals (GameConstant.OBSTACLE_COL)) 
 				{
-					count++;
-					if (count == 1) {
+					rotationCount++;
+					Debug.LogError ("On decide......");
+					if (rotationCount == 1) {
 						if (rotationSpeed > 2f) {
-							reduceSpeedFactor = reduceSpeedFactor * 12f;
+							reduceSpeedFactor = reduceSpeedFactor * 15f;
 						} else if ((rotationSpeed > 1.4f) && (rotationSpeed < 2f)) {
-							reduceSpeedFactor = reduceSpeedFactor * 10f;
+							reduceSpeedFactor = reduceSpeedFactor * 12f;
 						} else if ((rotationSpeed > 0.8f) && (rotationSpeed < 1.4f)) {
 							reduceSpeedFactor = reduceSpeedFactor * 8f;
 						} else if ((rotationSpeed > 0.6f) && (rotationSpeed < 0.8f)) {
@@ -240,14 +246,14 @@ namespace Roulette.GamePlay
 							reduceSpeedFactor = reduceSpeedFactor * 0.2f;
 						}
 
-					} else if (count == 2) {
+					} else if (rotationCount == 2) {
 						if (rotationSpeed > 0.7f) {
 							reduceSpeedFactor = reduceSpeedFactor * 5f;
 						}
 						else if ((rotationSpeed > 0.5f) && (rotationSpeed < 0.7f)) {
 							reduceSpeedFactor = reduceSpeedFactor * 3.5f;
 						} 
-					} else if (count == 3) {
+					} else if (rotationCount == 3) {
 						if (rotationSpeed > 0.5f) {
 							reduceSpeedFactor = reduceSpeedFactor * 5f;
 						}
