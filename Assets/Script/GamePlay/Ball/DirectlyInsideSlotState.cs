@@ -24,7 +24,7 @@ namespace Roulette.GamePlay
 			Obstacle,
 		}
 
-		public Transform slotInPosition;
+		public Transform objectInSlot;
 
 		public MovementState curMovementState;
 		private HitState curHitState;
@@ -142,7 +142,7 @@ namespace Roulette.GamePlay
 		// Ball move in slot
 		void MoveBallInSlot()
 		{
-			movePosition = slotInPosition.position;
+			movePosition = objectInSlot.position;
 			movePosition.y = hitPoint - 0.02f;
 			tempdir = Vector3.Normalize (transform.position - movePosition);
 			rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);
@@ -156,7 +156,7 @@ namespace Roulette.GamePlay
 		// Ball movement inside slot
 		void MoveBallInsideSlot()
 		{
-			movePosition = finalObject.transform.position;
+			movePosition = objectInsideSlot.transform.position;
 			movePosition.y = hitPoint - 0.02f;
 			tempdir = Vector3.Normalize (transform.position - movePosition);
 			rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);

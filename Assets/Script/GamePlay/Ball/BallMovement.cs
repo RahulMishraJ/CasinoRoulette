@@ -8,12 +8,12 @@ namespace Roulette.GamePlay
 	public abstract class BallMovement : MonoBehaviour 
 	{
 		public GameObject roulette;
-		public GameObject finalObject;
+		public GameObject objectInsideSlot;
 
 		public Transform finalReachedPoint;
 		public Transform parentModel;
 
-		public Transform[] movePoint; 
+		public Transform[] wayPointEnterSlot; 
 
 		protected float outerRadius ;
 		protected float innerRadius ;

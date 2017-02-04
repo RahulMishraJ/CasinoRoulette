@@ -229,7 +229,7 @@ namespace Roulette.GamePlay
 		// move ball in curve to enter in slot
 		void MoveBallInCurve()
 		{
-			movePosition = movePoint [0].position;
+			movePosition = wayPointEnterSlot [0].position;
 			movePosition.y = hitPoint - 0.02f;
 			transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
 			if (Vector3.Magnitude (transform.position - movePosition) < 0.2f) {
@@ -241,7 +241,7 @@ namespace Roulette.GamePlay
 		// enter in the slot
 		void MoveBallInSlot()
 		{
-			movePosition = movePoint [1].position;
+			movePosition = wayPointEnterSlot [1].position;
 			movePosition.y = hitPoint - 0.02f;
 			transform.position = Vector3.Slerp(transform.position,movePosition, Time.deltaTime*rotationSpeed*4.0f);
 
@@ -293,7 +293,7 @@ namespace Roulette.GamePlay
 		// move inside slot
 		void MoveBallInsideSlot()
 		{
-			movePosition = finalObject.transform.position;
+			movePosition = objectInsideSlot.transform.position;
 			movePosition.y = hitPoint - 0.02f;
 			tempdir = Vector3.Normalize (transform.position - movePosition);
 			rigidbody.AddRelativeTorque (tempdir*Time.deltaTime*2f);

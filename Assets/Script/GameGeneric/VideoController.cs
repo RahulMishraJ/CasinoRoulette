@@ -34,6 +34,7 @@ public class VideoController : MonoBehaviour
 		tex.Play();
 		tex.loop = true;
 		#elif !UNITY_WEBGL
+		Debug.LogError("Play Video");
 		mediaPlayerCtrl.Play ();
 		mediaPlayerCtrl.m_bAutoPlay = true;
 		#endif

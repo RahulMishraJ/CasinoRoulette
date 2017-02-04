@@ -30,7 +30,7 @@ namespace Roulette.Camera
 			
 			this.transform.position = originalPosition;
 			this.transform.eulerAngles = originalAngle;
-			FocusTable ();
+			//FocusTable ();
 		}
 
 		public void FocusTable()
