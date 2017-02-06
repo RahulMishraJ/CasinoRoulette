@@ -328,7 +328,6 @@ namespace Roulette.GamePlay
 					else if (col.gameObject.tag.Equals (GameConstant.POCKET_COL)) 
 					{
 						if (!firsttimehit) {
-							Debug.LogError ("Inside collider");
 							curRadiusState = RadiusState.None;
 							curMovementState = MovementState.None;
 							firsttimehit = true;

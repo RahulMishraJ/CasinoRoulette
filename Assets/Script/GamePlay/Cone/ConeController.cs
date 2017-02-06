@@ -110,7 +110,7 @@ namespace Roulette.GamePlay
 				numeberSecondCone = 37 + numeberSecondCone;
 			}
 			obstacle[0].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+6) * eachNumberAngle, 0);
-			obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+8) * eachNumberAngle, 0);
+			obstacle[1].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+8) * eachNumberAngle, 0);//8
 			obstacle[2].transform.localEulerAngles = new Vector3 (0, (numeberSecondCone+1) * eachNumberAngle, 0);
 		}
 	}
